@@ -148,6 +148,22 @@ export function AppShell() {
     }
   }, []);
 
+  // Lembrete diário — dispara uma vez por dia após as 07:00 se houver permissão
+  useEffect(() => {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    const today = new Date().toISOString().slice(0, 10);
+    const lastReminder = storage.get('daily:reminder:date', '', (v) => String(v));
+    if (lastReminder === today) return;
+    const hour = new Date().getHours();
+    if (hour < 7) return;
+    storage.set('daily:reminder:date', today);
+    new Notification('📚 Bom dia, foco total!', {
+      body: 'Abra suas metas do dia e comece com um Pomodoro.',
+      icon: '/vite.svg',
+      tag: 'daily-reminder',
+    });
+  }, []);
+
   const glassStyle = videoId
     ? 'bg-white/70 backdrop-blur-xl border-white/40 shadow-2xl'
     : darkMode

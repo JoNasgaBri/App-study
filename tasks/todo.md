@@ -18,7 +18,7 @@ Reestruturar o projeto para um padrão moderno de engenharia de software, com ba
 - `src/styles`: estilos globais/utilitários visuais.
 
 ## Critérios de aceite (checkável)
-- [ ] Nenhum componente acima de ~250 linhas.
+- [x] Nenhum componente acima de ~250 linhas.
 - [x] `src/App.jsx` atua apenas como orquestrador de alto nível.
 - [x] Persistência em LocalStorage centralizada e sem repetição de chaves mágicas.
 - [x] Build de produção executa sem erro.
@@ -344,3 +344,49 @@ Implementar features inspiradas no Zen Browser: barra lateral com auto-retrair/r
   - `npm run build` — 1772 módulos, 277.21 kB (gzip: 83.62 kB).
 - Pendências:
   - Expandir `accentStyle` para os botões de submit em cada view (fase futura).
+
+---
+
+## Passo 10 — Release Readiness: Backup, Hardening, Lembrete Diário, Sentry
+
+### Objetivo
+Fechar todos os bloqueadores de release público identificados no backlog: backup/restore de dados locais, hardening de schema com versionamento e purge, lembrete diário via Web Notifications, integração Sentry opt-in e redução de todos os componentes ao limite de 250 linhas.
+
+### Critérios de aceite
+- [x] `PomodoroView.jsx` ≤ 250 linhas — lógica de settings extraída para `PomodoroSettings.jsx`.
+- [x] `SidebarCustomizationPanel.jsx` criado — painel de personalização extraído do `DesktopSidebar.jsx`.
+- [x] Nenhum componente acima de 250 linhas (máximo: DashboardView 241, PomodoroView 239).
+- [x] `src/shared/lib/backup.js` criado — `exportData()`, `importData()`, `triggerDownload()`.
+- [x] Botões Exportar / Importar na sidebar com feedback visual de estado.
+- [x] Importação valida schema (`__app`, `__version`, `data`) e rejeita arquivos inválidos.
+- [x] `storage.migrate()` — verifica `schema:version`, aplica migrações e grava versão atual.
+- [x] `storage.purgeExpired()` — remove chaves com `__expiresAt` vencido.
+- [x] `storage.setWithTTL()` / `storage.getWithTTL()` — API para dados com expiração.
+- [x] `CURRENT_SCHEMA_VERSION = 1` exportado de `storage.js`.
+- [x] `storage.migrate()` e `storage.purgeExpired()` chamados no boot em `main.jsx`.
+- [x] Lembrete diário: dispara `Notification` uma vez por dia após 07:00 se permissão concedida.
+- [x] Data do último lembrete salva em `daily:reminder:date` para evitar repetição.
+- [x] `@sentry/react` instalado.
+- [x] Sentry inicializado em `main.jsx` apenas se `VITE_SENTRY_DSN` estiver definido.
+- [x] `.env.example` atualizado com `VITE_SENTRY_DSN` e `VITE_SENTRY_TRACES_SAMPLE_RATE`.
+- [x] `npm run lint` — 0 erros.
+- [x] `npm run build` — 2062 módulos, 282.12 kB.
+
+## Review — Passo 10
+- Status geral: Concluído
+- Mudanças implementadas:
+  - `src/features/pomodoro/PomodoroSettings.jsx` — Modal de configuração extraído do PomodoroView.
+  - `src/app/layout/SidebarCustomizationPanel.jsx` — Painel de temas/gradientes/relevo extraído do DesktopSidebar.
+  - `src/shared/lib/backup.js` — Export/import/download de JSON com validação de schema.
+  - `src/shared/lib/storage.js` — Addicionados `migrate()`, `purgeExpired()`, `setWithTTL()`, `getWithTTL()`, `CURRENT_SCHEMA_VERSION`.
+  - `src/app/AppShell.jsx` — Lembrete diário via `Notification` API (once-per-day, after 07:00).
+  - `src/app/layout/DesktopSidebar.jsx` — Botões Exportar/Importar com `fileInputRef`, feedback `backupMsg`.
+  - `src/main.jsx` — Sentry init opt-in + `storage.migrate()` + `storage.purgeExpired()` no boot.
+  - `.env.example` — `VITE_SENTRY_DSN` e `VITE_SENTRY_TRACES_SAMPLE_RATE` adicionados.
+- Evidências de verificação:
+  - `npm run lint` — 0 erros, 0 warnings.
+  - `npm run build` — 2062 módulos, 282.12 kB (gzip: 85.33 kB).
+- Pendências:
+  - `accentStyle` nos botões de submit de cada view (backlog fase futura).
+  - Sincronização em nuvem (backlog item 6 — Supabase/Firebase).
+  - Export ICS de cronograma (backlog item 7).

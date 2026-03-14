@@ -3,7 +3,7 @@ import { Pause, Play, RotateCcw, Settings, Volume2, VolumeX } from 'lucide-react
 import { storage } from '../../shared/lib/storage';
 import { playNotificationSound } from '../../shared/lib/audio';
 import { clampNumber } from '../../shared/lib/validation';
-import { Modal } from '../../shared/components/Modal';
+import { PomodoroSettings } from './PomodoroSettings';
 
 const WORK_KEY = 'pomodoro_work';
 const BREAK_KEY = 'pomodoro_break';
@@ -162,35 +162,21 @@ export function PomodoroView({ theme, hasVideo, darkMode }) {
     ? 'bg-zinc-700/80 rounded text-zinc-300 font-mono'
     : 'bg-stone-200/80 rounded text-stone-800 font-mono';
 
-  const labelInput = darkMode ? 'text-zinc-400' : 'text-stone-500';
-  const inputClass = darkMode ? 'bg-zinc-800 border-zinc-600 text-zinc-100' : 'bg-stone-50 border-stone-200 text-stone-800';
-
-  if (showSettings) {
-    return (
-      <Modal open={showSettings} onClose={cancelSettings} title="Configurar Tempos" darkMode={darkMode} size="sm">
-        <div className="space-y-5 mb-6">
-          <div>
-            <label className={`text-xs font-bold uppercase tracking-widest block mb-2 ${labelInput}`}>Foco (minutos)</label>
-            <input type="number" min="1" max="120" value={workMins} onChange={(e) => setWorkMins(clampNumber(e.target.value, 1, 120, 30))} className={`w-full border-b-2 py-2 px-3 text-lg font-medium focus:outline-none transition-colors rounded-t-lg ${inputClass} ${theme.borderFocus}`} />
-          </div>
-          <div>
-            <label className={`text-xs font-bold uppercase tracking-widest block mb-2 ${labelInput}`}>Pausa (minutos)</label>
-            <input type="number" min="1" max="60" value={breakMins} onChange={(e) => setBreakMins(clampNumber(e.target.value, 1, 60, 5))} className={`w-full border-b-2 py-2 px-3 text-lg font-medium focus:outline-none transition-colors rounded-t-lg ${inputClass} ${theme.borderFocus}`} />
-          </div>
-          <div className="flex items-center justify-between pt-1">
-            <label className={`text-xs font-bold uppercase tracking-widest ${labelInput}`}>Som de Alarme</label>
-            <button onClick={() => setSoundEnabled(!soundEnabled)} className={`p-2 rounded-xl transition-colors ${soundEnabled ? `${theme.bgLight} ${theme.text}` : darkMode ? 'bg-zinc-800 text-zinc-500' : 'bg-stone-100 text-stone-400'}`}>{soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}</button>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={cancelSettings} className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${darkMode ? 'border-zinc-700 text-zinc-400 hover:bg-zinc-800' : 'border-stone-200 text-stone-600 hover:bg-stone-50'}`}>Cancelar</button>
-          <button onClick={saveSettings} className={`flex-1 py-3 rounded-xl text-white font-bold transition-transform hover:scale-[1.02] shadow-lg ${theme.accent}`}>Guardar</button>
-        </div>
-      </Modal>
-    );
-  }
-
   return (
+    <>
+      <PomodoroSettings
+        open={showSettings}
+        onClose={cancelSettings}
+        onSave={saveSettings}
+        theme={theme}
+        darkMode={darkMode}
+        workMins={workMins}
+        setWorkMins={setWorkMins}
+        breakMins={breakMins}
+        setBreakMins={setBreakMins}
+        soundEnabled={soundEnabled}
+        setSoundEnabled={setSoundEnabled}
+      />
     <div className="flex flex-col items-center justify-center min-h-[70vh] relative animate-in fade-in duration-500">
       <div className="absolute top-0 right-0 flex gap-2">
         <button onClick={() => setSoundEnabled(!soundEnabled)} className={`p-2.5 rounded-full transition-all ${iconBtnBase} ${soundEnabled ? theme.text : darkMode ? 'text-zinc-500' : 'text-stone-400'}`}>
@@ -248,5 +234,6 @@ export function PomodoroView({ theme, hasVideo, darkMode }) {
         <span className="flex items-center gap-1.5"><kbd className={`px-2 py-1 ${kbdClass}`}>R</kbd> Reset</span>
       </div>
     </div>
+    </>
   );
 }
