@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─── Base: smoothing + scrollbar global ────────────────────────────────── */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Scrollbar fina universalmente */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(214 211 209 / 0.5) transparent;
+  }
+  *::-webkit-scrollbar          { width: 4px; height: 4px; }
+  *::-webkit-scrollbar-track    { background: transparent; }
+  *::-webkit-scrollbar-thumb    {
+    background-color: rgb(214 211 209 / 0.5);
+    border-radius: 999px;
+  }
+  /* dark variant — applied via parent class if needed */
+  .dark *::-webkit-scrollbar-thumb {
+    background-color: rgb(63 63 70 / 0.6);
+  }
+
+  /* Focus ring elegante que substitui o outline padrão do browser */
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Seleção de texto suave */
+  ::selection {
+    background-color: rgb(214 211 209 / 0.5);
+  }
+}
+
+/* ─── Utilities extras ───────────────────────────────────────────────────── */
+@layer utilities {
+  /* Esconder scrollbar mantendo funcionalidade */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* Safe area bottom padding (mobiles com notch) */
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}

@@ -98,6 +98,35 @@ Reestruturar o projeto para um padrão moderno de engenharia de software, com ba
 | 7 | Integração de calendário (Google Calendar/ICS) | Médio | Médio | Médio | OAuth (futuro), módulo `features/schedule` | Exportar cronograma para `.ics` + import básico |
 | 8 | Monitoramento de erros em produção (Sentry/LogRocket) | Médio | Baixo | Baixo | `app/ErrorBoundary`, variáveis de ambiente | Captura de erro global + contexto da tela ativa |
 
+---
+
+## Plano de execução — Autenticação e Onboarding Personalizado
+
+### Foco da Feature
+Implementar a porta de entrada do usuário (Login/Cadastro mockado localmente) e direcioná-lo a um Onboarding que personaliza as configurações iniciais do app baseado no seu perfil de estudo.
+
+### Tarefas (Checklist)
+- [x] **1. Módulo de Autenticação (`features/auth`)**
+  - [x] Criar `AuthView.jsx` contendo formulários independentes de Login e Cadastro (Visual simples e centralizado).
+  - [x] Criar gerenciamento de estado global e persistência básica da sessão no `localStorage` (ex: `userProfile`, `isAuthenticated`).
+  - [x] Proteger o `AppShell`: redirecionar usuários não autenticados para o `AuthView`.
+- [ ] **2. Evolução do Onboarding (`features/onboarding`)**
+  - [ ] Expandir `OnboardingWizard.jsx` para suportar fluxo de 3 passos: Perfil (Objetivo), Metas (Tempo) e Imersão (Cores e Vídeos).
+  - [ ] Garantir que o Onboarding renderize logo após o cadastro, e só saia ao ser concluído (flag `hasCompletedOnboarding`).
+- [ ] **3. Serviço de Personalização (`features/onboarding/personalizationService.js`)**
+  - [ ] Criar regra de negócio para injetar `syllabus` e `checklist` customizados dependendo da área de estudo escolhida.
+  - [ ] Injetar as metas de pomodoro/horas no estado do `goals`.
+- [ ] **4. Tela Inicial Direcionada (Dashboard)**
+  - [ ] Inserir saudação customizada no `StudentHeader.jsx`.
+  - [ ] Gerar um `ChecklistCard` instrucional ("Primeiros Passos") que fica salvo no Dashboard no momento da criação da conta.
+
+### Review (preencher ao final)
+- Status geral: Não iniciado
+- Mudanças implementadas: 
+- Evidências de verificação: 
+- Lições aprendidas: 
+
+
 ### Notas de lançamento
 - Ordem sugerida para sprint curto: 1 → 2 → 4 → 8 (quick wins), depois 3 → 5, e fechar com 6 → 7.
 - Segurança de dados mínima antes do release público: itens 2 e 3 obrigatórios.

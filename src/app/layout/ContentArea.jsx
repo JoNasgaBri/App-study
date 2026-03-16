@@ -7,7 +7,7 @@ export function ContentArea({ activeTab, activeView, videoId, mainGlassStyle, da
 
   return (
     <main className={`flex-1 flex flex-col h-full relative overflow-y-auto pb-20 md:pb-0 transition-all duration-500 ${mainGlassStyle}`}>
-      <div className="max-w-5xl mx-auto w-full p-6 md:p-12">
+      <div key={activeTab} className="max-w-5xl mx-auto w-full p-6 md:p-12 animate-fade-up">
         {activeTab === 'pomodoro' ? (
           activeView
         ) : (

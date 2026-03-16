@@ -16,6 +16,9 @@ import { BackgroundLayer } from './layout/BackgroundLayer';
 import { DesktopSidebar } from './layout/DesktopSidebar';
 import { ContentArea } from './layout/ContentArea';
 import { MobileBottomNav } from './layout/MobileBottomNav';
+// AUTH: imports kept for when auth is re-enabled
+// import { AuthView } from '../features/auth/AuthView';
+// import { useAuth } from '../features/auth/hooks/useAuth';
 
 const THEME_KEY = 'themeKey';
 const VIDEO_KEY = 'videoId';
@@ -27,6 +30,8 @@ const CUSTOM_ACCENT_KEY = 'customAccent';
 const SHADOW_LEVEL_KEY = 'shadowLevel';
 
 export function AppShell() {
+  // AUTH: disabled temporarily — re-enable by uncommenting useAuth and the guard below
+  // const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('raiox');
   const [onboardingDone, setOnboardingDone] = useState(() =>
     storage.get(ONBOARDING_COMPLETED_KEY, false, (v) => Boolean(v)),
@@ -60,11 +65,15 @@ export function AppShell() {
 
   const SHADOW_CLASS = ['shadow-none', 'shadow-sm', 'shadow-lg', 'shadow-2xl'][shadowLevel];
 
-  const handleOnboardingComplete = useCallback(({ themeKey: newTheme, darkMode: newDark }) => {
+  const handleOnboardingComplete = useCallback(({ themeKey: newTheme, darkMode: newDark, profile }) => {
     setThemeKey(newTheme);
     storage.set(THEME_KEY, newTheme);
     setDarkMode(newDark);
     storage.set(DARK_MODE_KEY, newDark);
+    if (profile?.examDate) {
+      const ms = new Date(profile.examDate).getTime() - Date.now();
+      setDaysLeft(Math.max(0, Math.ceil(ms / 86_400_000)));
+    }
     setOnboardingDone(true);
   }, []);
 
@@ -185,6 +194,11 @@ export function AppShell() {
     if (activeTab === 'checklist') return <ExamChecklistView theme={t} darkMode={darkMode} />;
     return null;
   }, [activeTab, effectiveTheme, videoId, darkMode]);
+
+  // AUTH GUARD (disabled) — uncomment to re-activate:
+  // if (!isAuthenticated) {
+  //   return <AuthView onLogin={() => {}} />;
+  // }
 
   if (!onboardingDone) {
     return <OnboardingWizard onComplete={handleOnboardingComplete} />;
