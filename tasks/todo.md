@@ -126,6 +126,49 @@ Implementar a porta de entrada do usuário (Login/Cadastro mockado localmente) e
 - Evidências de verificação: 
 - Lições aprendidas: 
 
+---
+
+## Release v1.1.0 — Revisão de Escopo e Status
+
+### O que entra na v1.1.0
+
+| # | Feature | Status |
+|---|---|---|
+| Auth layer (estrutura) | `AuthContext`, `AuthProvider`, `useAuth`, `AuthView` criados | ✅ Pronto — inativo na UI por design |
+| Bug fix: examDate → daysLeft | O wizard agora atualiza `daysLeft` ao completar o onboarding | ✅ Corrigido |
+| Bug fix: camada auth desdup | `authContext.js` (contexto puro) + `AuthContext.jsx` (provider) + `hooks/useAuth.js` separados | ✅ Corrigido |
+| CSS customizado | `index.css` com scrollbar, font smoothing, easing, `::selection` | ✅ Pronto |
+| Tailwind tokens | `ease-spring`, `ease-expo-out`, `animate-fade-up`, `animate-scale-in`, `animate-popover-up` | ✅ Pronto |
+| Transição de views | `ContentArea` — `key={activeTab}` + `animate-fade-up` (220ms, expo-out) | ✅ Pronto |
+| ColorPopover | Painel de aparência escondido em popover flutuante, abre com botão `Palette` | ✅ Pronto |
+| Sidebar micro-interações | Pill indicator animado no item ativo + icon spring hover | ✅ Pronto |
+| Sidebar footer simplificado | Apenas `Sun/Moon` + `Palette` — sem painel inline permanente | ✅ Pronto |
+
+### O que fica para v1.2.0 (próximo ciclo)
+
+| # | Feature | Prioridade |
+|---|---|---|
+| Auth ativa | Ativar guard + tela de login/cadastro na UI | Alta |
+| Onboarding 2.0 | Personalização pós-cadastro: onboarding liga ao perfil de auth | Alta |
+| Serviço de personalização | `personalizationService.js` — injetar syllabus e metas baseado no perfil | Média |
+| Dashboard "Primeiros Passos" | Card instrucional injetado automaticamente na criação da conta | Média |
+
+### Critérios de aceite — v1.1.0
+- [x] `npm run lint` — 0 erros, 0 warnings
+- [x] `npm run build` — build limpo (2065 módulos, 285.99 kB)
+- [x] Nenhuma regressão de comportamento: navegação, tema, vídeo, dark mode, backup
+- [x] Animação de troca de views funcionando (fade-up 220ms)
+- [x] ColorPopover abre/fecha corretamente (Escape, click fora, botão X)
+- [x] Sidebar mantém estado ao hover com popover aberto
+- [x] bug daysLeft corrigido após onboarding
+
+### Review — v1.1.0
+- Status geral: **Concluído — pronto para tag**
+- Build: `npm run build` — 2065 módulos, 285.99 kB (gzip: 86.39 kB)
+- Lint: 0 erros, 0 warnings
+- Arquivos modificados desde v1.0: `src/App.jsx`, `src/app/AppShell.jsx`, `src/app/layout/ContentArea.jsx`, `src/app/layout/DesktopSidebar.jsx`, `src/index.css`, `tailwind.config.js`
+- Novos arquivos: `src/app/layout/ColorPopover.jsx`, `src/features/auth/**`, `docs/data-architecture.md`
+
 
 ### Notas de lançamento
 - Ordem sugerida para sprint curto: 1 → 2 → 4 → 8 (quick wins), depois 3 → 5, e fechar com 6 → 7.
