@@ -177,6 +177,152 @@ Implementar a porta de entrada do usuário (Login/Cadastro mockado localmente) e
 
 ---
 
+## Escopo v1.2.0 — Definição Completa
+
+> Auditado em: 16/03/2026 | Baseado em: UX audit completo pós-v1.1.0
+> Critério de entrada na v1.2.0: apenas itens com impacto direto na experiência do usuário real.
+
+---
+
+### 🔴 Correções Críticas (bloqueiam experiência — resolver primeiro)
+
+- [ ] **[NAV-01] MobileBottomNav — indicador de scroll oculto**
+  - Problema: quando há mais de 5 abas na nav mobile, as abas extras não são descobertas pelo usuário (sem sombra, sem indicador de overflow)
+  - Arquivo: `src/app/layout/MobileBottomNav.jsx`
+  - Solução: adicionar gradiente de fade na borda direita quando há overflow horizontal + scroll suave via `overflow-x-auto scroll-smooth scrollbar-hide`
+
+- [ ] **[NAV-02] MobileBottomNav — label truncada ("Raio X" → "Raio")**
+  - Problema: label longa cortada por `truncate` sem espaço suficiente, perde legibilidade
+  - Arquivo: `src/app/layout/MobileBottomNav.jsx`
+  - Solução: encurtar o rótulo em mobile (ex: alias curto por rota) ou aumentar a área mínima do item
+
+- [ ] **[DASH-01] Dashboard — estado vazio invisível**
+  - Problema: seções de Redações e Erros somem quando sem dados, sem qualquer CTA ou instrução
+  - Arquivo: `src/features/dashboard/DashboardView.jsx`
+  - Solução: para cada seção sem itens, renderizar card de estado vazio com ação primária ("Registrar primeiro erro →", "Criar primeira redação →")
+
+- [ ] **[DASH-02] Dashboard — sem ponto de partida para novo usuário**
+  - Problema: canvas em branco sem orientação — usuário não sabe o que fazer no primeiro acesso
+  - Arquivo: `src/features/dashboard/components/CanvasBoard.jsx`
+  - Solução: quando `cards.length === 0`, renderizar mensagem instrutiva com botão de ação rápida para abrir `AddCardMenu`
+
+---
+
+### 🟡 Features de Alto Valor (entram na v1.2.0 core)
+
+- [ ] **[AUTH-01] Ativar guard de autenticação**
+  - O que fazer: descomentar 2 linhas no `AppShell.jsx` (marcadas com `// AUTH GUARD (disabled)`)
+  - Dependência: `AuthView.jsx` já existe e funcional; `useAuth` hook já existe
+  - Atenção: validar que o redirect para `AuthView` funciona em mobile e desktop antes de ativar
+
+- [ ] **[AUTH-02] AuthView — validação de formulário em tempo real**
+  - Problema atual: erros de validação só aparecem ao submeter
+  - Arquivo: `src/features/auth/AuthView.jsx`
+  - Solução: feedback inline por campo (email inválido, senha fraca) com `aria-describedby` para acessibilidade
+
+- [ ] **[ONBOARD-01] Onboarding 2.0 — remover opção de skip na etapa de personalização**
+  - Problema: botão "Pular" na etapa de configuração do tema/metas resulta em app sem personalização — experiência genérica
+  - Arquivo: `src/features/onboarding/OnboardingWizard.jsx`
+  - Solução: tornar a etapa de imersão obrigatória; skip só disponível em etapas secundárias
+
+- [ ] **[ONBOARD-02] Transição pós-wizard**
+  - Problema: ao fechar o wizard não há animação — conteúdo aparece abruptamente
+  - Arquivo: `src/app/AppShell.jsx` + `src/features/onboarding/OnboardingWizard.jsx`
+  - Solução: `animate-fade-up` no container do AppShell ao setar `onboardingDone = true`
+
+- [ ] **[ONBOARD-03] Serviço de personalização — `personalizationService.js`**
+  - O que criar: `src/features/onboarding/personalizationService.js`
+  - Responsabilidade: receber o `profile` do wizard e injetar dados iniciais:
+    - Tópicos do `syllabus` baseados na área de estudo escolhida
+    - Metas iniciais de pomodoro/horas no `goals`
+    - Checklist de "Primeiros Passos" no dashboard
+  - Dependências: `defaultTopics.js`, `storage.js`, `goals` schema
+
+- [ ] **[DASH-03] Card "Primeiros Passos" no Dashboard**
+  - O que fazer: ao completar o onboarding pela primeira vez, injetar um `TextCard` instrucional no canvas com links internos para as principais features
+  - Arquivo: `src/features/dashboard/DashboardView.jsx` + `personalizationService.js`
+  - Expiração: card pode ser fechado pelo usuário e não reaparece
+
+- [ ] **[HEADER-01] StudentHeader — saudação personalizada com nome do usuário**
+  - Problema atual: saudação genérica ("Olá, Estudante!")
+  - Arquivo: `src/features/dashboard/components/StudentHeader.jsx`
+  - Solução: ler `userProfile.name` do `storage` e exibir nome real; fallback para "Estudante"
+
+---
+
+### 🟠 Melhorias de Qualidade (entram se houver capacidade)
+
+- [ ] **[UX-01] Goals — feedback visual ao completar meta**
+  - Problema: marcar meta como concluída não dá nenhum feedback satisfatório
+  - Arquivo: `src/features/goals/components/GoalItem.jsx`
+  - Solução: micro-animação de check (scale + cor) + som opcional (já existe `audio.js`)
+
+- [ ] **[UX-02] Pomodoro — tela de fim de sessão**
+  - Problema: ao zerar o timer, nada acontece além de um som
+  - Arquivo: `src/features/pomodoro/PomodoroView.jsx`
+  - Solução: exibir modal/overlay de conclusão com tempo focado + botão para iniciar pausa
+
+- [ ] **[UX-03] Sidebar — hint de atalho visível**
+  - Problema: atalho `D` para dark mode existe mas é completamente invisível para o usuário
+  - Arquivo: `src/app/layout/DesktopSidebar.jsx`
+  - Solução: tooltip no botão Sun/Moon mostrando `D` com `kbd` styling
+
+- [ ] **[UX-04] SyllabusView — persistir progresso de tópicos entre sessões**
+  - Problema: marcar tópico como concluído não persiste após refresh
+  - Arquivo: `src/features/syllabus/SyllabusView.jsx`
+  - Solução: salvar array de `completedTopics` no `storage` com chave `syllabus:completed`
+
+- [ ] **[UX-05] ScheduleView — nenhum evento no dia atual destacado**
+  - Problema: não há indicação visual de "hoje" no cronograma
+  - Arquivo: `src/features/schedule/ScheduleView.jsx`
+  - Solução: destacar coluna/linha do dia atual com cor de acento
+
+- [ ] **[PERF-01] Lazy loading de views pesadas**
+  - Problema: todas as views carregam no bundle principal
+  - Arquivo: `src/app/AppShell.jsx`
+  - Solução: `React.lazy` + `Suspense` para `SyllabusView`, `WritingView`, `ErrorTrackerView`
+
+---
+
+### 🟢 Backlog Futuro (não entra na v1.2.0)
+
+- [ ] **[SYNC-01]** Sincronização em nuvem (Supabase/Firebase) — depende de backend
+- [ ] **[CAL-01]** Export do cronograma para `.ics` (Google Calendar)
+- [ ] **[EXPORT-01]** Export do checklist de progresso para PDF
+- [ ] **[A11Y-01]** Auditoria completa de acessibilidade (WCAG 2.1 AA)
+- [ ] **[DARK-01]** Animação suave de transição entre dark/light mode (cross-fade)
+- [ ] **[NOTIFY-01]** Web Notifications para fim de pomodoro e lembretes diários
+
+---
+
+### Critérios de aceite — v1.2.0
+
+- [ ] Todos os itens 🔴 resolvidos
+- [ ] Auth ativa sem regressão na experiência de usuário já cadastrado
+- [ ] `personalizationService.js` cobrindo pelo menos 2 áreas de estudo distintas
+- [ ] Dashboard exibe estado vazio com CTA em todas as seções sem dados
+- [ ] `npm run lint` — 0 erros, 0 warnings
+- [ ] `npm run build` — build limpo
+- [ ] Smoke test: onboarding completo → dashboard com card "Primeiros Passos" visível
+
+---
+
+### Ordem de execução sugerida — v1.2.0
+
+```
+1. [NAV-01] + [NAV-02]   — Mobile nav (rápido, isolado)
+2. [DASH-01] + [DASH-02] — Dashboard empty states (sem dependências)
+3. [HEADER-01]           — StudentHeader (1 linha de lógica)
+4. [ONBOARD-01] + [ONBOARD-02] — Wizard melhorias
+5. [ONBOARD-03]          — personalizationService (core do ciclo)
+6. [DASH-03]             — Card Primeiros Passos (depende de 5)
+7. [AUTH-01] + [AUTH-02] — Ativar auth (depende de 4, 5, 6 estarem estáveis)
+8. [UX-01..05]           — Melhorias de qualidade (paralelo se houver tempo)
+9. [PERF-01]             — Lazy loading (último, sem risco funcional)
+```
+
+---
+
 ## Plano de execução — Passo 3 (Base para novas features)
 1. Criar contrato de ambiente com `.env.example` e validação em runtime.
 2. Adicionar observabilidade mínima (logs e handlers globais de erro).

@@ -190,7 +190,7 @@ export function AppShell() {
     if (activeTab === 'redacao') return <WritingView theme={t} darkMode={darkMode} />;
     if (activeTab === 'erros') return <ErrorTrackerView theme={t} darkMode={darkMode} />;
     if (activeTab === 'metas') return <GoalsView theme={t} darkMode={darkMode} />;
-    if (activeTab === 'estatisticas') return <DashboardView theme={t} darkMode={darkMode} />;
+    if (activeTab === 'estatisticas') return <DashboardView theme={t} darkMode={darkMode} onTabChange={setActiveTab} />;
     if (activeTab === 'checklist') return <ExamChecklistView theme={t} darkMode={darkMode} />;
     return null;
   }, [activeTab, effectiveTheme, videoId, darkMode]);

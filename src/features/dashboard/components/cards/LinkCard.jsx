@@ -1,10 +1,9 @@
 import { ExternalLink } from 'lucide-react';
 
 /**
- * Inner content for a "link" card.
- * Shows editable fields in edit mode, a rich preview in display mode.
+ * Inner content for a "link" widget.
  */
-export function LinkCard({ card, onUpdate }) {
+export function LinkCard({ card, onUpdate, darkMode }) {
   const hasUrl = card.url?.trim().length > 0;
 
   const safeHref = () => {
@@ -16,13 +15,19 @@ export function LinkCard({ card, onUpdate }) {
     }
   };
 
+  const inputClass = `w-full bg-transparent text-sm font-semibold focus:outline-none border-b border-transparent pb-0.5 transition-colors ${
+    darkMode
+      ? 'text-zinc-200 placeholder-zinc-600 focus:border-zinc-600'
+      : 'text-stone-700 placeholder-stone-300 focus:border-stone-300'
+  }`;
+
   return (
     <div className="flex flex-col gap-2">
       <input
         value={card.title}
         onChange={(e) => onUpdate({ title: e.target.value })}
         placeholder="Título do link..."
-        className="w-full bg-transparent text-sm font-semibold placeholder-stone-300 focus:outline-none text-stone-700 border-b border-transparent focus:border-stone-300 pb-0.5 transition-colors"
+        className={inputClass}
       />
 
       <input
@@ -30,7 +35,11 @@ export function LinkCard({ card, onUpdate }) {
         onChange={(e) => onUpdate({ url: e.target.value })}
         placeholder="https://..."
         type="url"
-        className="w-full bg-transparent text-xs placeholder-stone-300 focus:outline-none text-stone-400 font-mono border-b border-transparent focus:border-stone-200 pb-0.5 transition-colors"
+        className={`w-full bg-transparent text-xs font-mono focus:outline-none border-b border-transparent pb-0.5 transition-colors ${
+          darkMode
+            ? 'text-zinc-500 placeholder-zinc-700 focus:border-zinc-700'
+            : 'text-stone-400 placeholder-stone-300 focus:border-stone-200'
+        }`}
       />
 
       <textarea
@@ -38,7 +47,9 @@ export function LinkCard({ card, onUpdate }) {
         onChange={(e) => onUpdate({ description: e.target.value })}
         placeholder="Descrição opcional..."
         rows={2}
-        className="w-full bg-transparent text-sm text-stone-500 placeholder-stone-300 focus:outline-none resize-none leading-relaxed"
+        className={`w-full bg-transparent text-sm focus:outline-none resize-none leading-relaxed ${
+          darkMode ? 'text-zinc-400 placeholder-zinc-600' : 'text-stone-500 placeholder-stone-300'
+        }`}
       />
 
       {hasUrl && (
@@ -46,7 +57,9 @@ export function LinkCard({ card, onUpdate }) {
           href={safeHref()}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-stone-400 hover:text-stone-700 transition-colors mt-1 group"
+          className={`inline-flex items-center gap-1 text-xs transition-colors mt-1 group ${
+            darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-stone-400 hover:text-stone-700'
+          }`}
         >
           <ExternalLink className="w-3 h-3" />
           <span className="group-hover:underline truncate max-w-[14rem]">{card.url}</span>
