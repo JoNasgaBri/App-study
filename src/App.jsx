@@ -1,10 +1,8 @@
 import { AppShell } from './app/AppShell';
-import { AuthProvider } from './features/auth/AuthContext';
+// AUTH: import kept for when auth is re-enabled
+// import { AuthProvider } from './features/auth/AuthContext';
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <AppShell />
-    </AuthProvider>
-  );
+  // AUTH: wrap with <AuthProvider> to re-enable authentication
+  return <AppShell />;
 }

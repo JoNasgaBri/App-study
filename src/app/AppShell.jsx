@@ -33,8 +33,9 @@ export function AppShell() {
   // AUTH: disabled temporarily — re-enable by uncommenting useAuth and the guard below
   // const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('raiox');
+  // TESTING: onboarding bypassed — change default from true → false to re-enable
   const [onboardingDone, setOnboardingDone] = useState(() =>
-    storage.get(ONBOARDING_COMPLETED_KEY, false, (v) => Boolean(v)),
+    storage.get(ONBOARDING_COMPLETED_KEY, true, (v) => Boolean(v)),
   );
   const [themeKey, setThemeKey] = useState(() =>
     storage.get(THEME_KEY, DEFAULT_THEME_KEY, (value, fallback) =>
